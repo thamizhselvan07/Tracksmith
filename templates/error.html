@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Error - Competitor Analysis Tool{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card bg-dark text-white">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="card-title mb-0">Error</h3>
+                </div>
+                <div class="card-body text-center">
+                    <i class="fas fa-exclamation-circle text-danger mb-3" style="font-size: 48px;"></i>
+                    <h4 class="text-light mb-3">{{ error_message }}</h4>
+                    <p class="text-light mb-4">Don't worry, we're here to help! Try the following:</p>
+                    <ul class="list-unstyled text-light">
+                        <li><i class="fas fa-redo me-2"></i>Refresh the page and try again</li>
+                        <li><i class="fas fa-search me-2"></i>Check your input data</li>
+                        <li><i class="fas fa-clock me-2"></i>Wait a few moments and retry</li>
+                    </ul>
+                    <div class="mt-4">
+                        <a href="{{ url_for('index') }}" class="btn btn-outline-light">
+                            <i class="fas fa-home me-2"></i>Return to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

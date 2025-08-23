@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+
+{% block title %}Analysis Results - CompetitorAI{% endblock %}
+
+{% block content %}
+<div class="analysis-results-container">
+    <div class="results-header">
+        <div class="results-title">
+            <h1><i class="fas fa-chart-pie"></i> Competitor Analysis Results</h1>
+            <div class="analysis-meta">
+                <span class="competitor-url">
+                    <i class="fas fa-link"></i> 
+                    {{ competitor_url.replace('https://', '').replace('http://', '') }}
+                </span>
+                <span class="analysis-date">
+                    <i class="fas fa-clock"></i> 
+                    {{ moment().format('MMMM Do, YYYY') if moment else 'Today' }}
+                </span>
+            </div>
+        </div>
+        <div class="results-actions">
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">
+                <i class="fas fa-plus"></i> New Analysis
+            </a>
+            <button onclick="window.print()" class="btn btn-outline">
+                <i class="fas fa-print"></i> Print Report
+            </button>
+        </div>
+    </div>
+
+    {% if analysis %}
+    <div class="results-grid">
+        <!-- Company Overview -->
+        <div class="result-section company-overview">
+            <div class="section-header">
+                <h2><i class="fas fa-building"></i> Company Overview</h2>
+            </div>
+            <div class="section-content">
+                <div class="overview-item">
+                    <label>Company Name:</label>
+                    <span>{{ analysis.company_overview.name or 'Not specified' }}</span>
+                </div>
+                <div class="overview-item">
+                    <label>Industry:</label>
+                    <span>{{ analysis.company_overview.industry or 'Not specified' }}</span>
+                </div>
+                <div class="overview-item">
+                    <label>Target Audience:</label>
+                    <span>{{ analysis.company_overview.target_audience or 'Not specified' }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- New Products Launched -->
+        <div class="result-section">
+            <div class="section-header">
+                <h2><i class="fas fa-rocket"></i> New Products Launched</h2>
+            </div>
+            <div class="section-content">
+                {% if analysis.products_launched %}
+                    {% for product in analysis.products_launched %}
+                    <div class="product-item">
+                        <h4>{{ product.name }}</h4>
+                        <p>{{ product.description }}</p>
+                        {% if product.launch_date %}
+                        <span class="product-date">
+                            <i class="fas fa-calendar"></i> {{ product.launch_date }}
+                        </span>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="no-data">No recent product launches detected</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Product Growth Analysis -->
+        <div class="result-section growth-analysis">
+            <div class="section-header">
+                <h2><i class="fas fa-chart-line"></i> Product Growth Analysis</h2>
+            </div>
+            <div class="section-content">
+                <div class="growth-item">
+                    <h4>{{ your_company }} vs Competitor</h4>
+                    <p>{{ analysis.growth_metrics.your_company_vs_competitor }}</p>
+                </div>
+                <div class="growth-item">
+                    <h4>Market Position</h4>
+                    <p>{{ analysis.growth_metrics.market_position }}</p>
+                </div>
+                <div class="growth-item">
+                    <h4>Growth Indicators</h4>
+                    <p>{{ analysis.growth_metrics.growth_indicators }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Famous Products -->
+        <div class="result-section">
+            <div class="section-header">
+                <h2><i class="fas fa-crown"></i> Famous Products in Competitor Company</h2>
+            </div>
+            <div class="section-content">
+                {% if analysis.famous_products %}
+                    {% for product in analysis.famous_products %}
+                    <div class="famous-product">
+                        <h4>{{ product.product }}</h4>
+                        <p>{{ product.description }}</p>
+                        <div class="product-impact">
+                            <strong>Market Impact:</strong> {{ product.market_impact }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="no-data">No famous products identified</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Features Comparison -->
+        <div class="result-section">
+            <div class="section-header">
+                <h2><i class="fas fa-list-check"></i> Features of Competitor vs Our Company</h2>
+            </div>
+            <div class="section-content">
+                {% if analysis.competitor_features %}
+                    {% for feature in analysis.competitor_features %}
+                    <div class="feature-comparison">
+                        <h4>{{ feature.feature }}</h4>
+                        <p>{{ feature.description }}</p>
+                        <div class="competitive-advantage">
+                            <strong>Competitive Advantage:</strong> {{ feature.competitive_advantage }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="no-data">No specific features identified for comparison</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- How to Beat Competitor -->
+        <div class="result-section strategies">
+            <div class="section-header">
+                <h2><i class="fas fa-bullseye"></i> How to Beat the Competitor Company</h2>
+            </div>
+            <div class="section-content">
+                {% if analysis.how_to_beat_competitor %}
+                    {% for strategy in analysis.how_to_beat_competitor %}
+                    <div class="strategy-item">
+                        <h4>{{ strategy.strategy }}</h4>
+                        <p>{{ strategy.description }}</p>
+                        <div class="implementation">
+                            <strong>Implementation:</strong> {{ strategy.implementation }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="no-data">No specific strategies identified</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Advertising Opportunities -->
+        <div class="result-section">
+            <div class="section-header">
+                <h2><i class="fas fa-megaphone"></i> Where We Can Advertise Our Product</h2>
+            </div>
+            <div class="section-content">
+                {% if analysis.advertising_opportunities %}
+                    {% for opportunity in analysis.advertising_opportunities %}
+                    <div class="advertising-opportunity">
+                        <h4>{{ opportunity.channel }}</h4>
+                        <p>{{ opportunity.opportunity }}</p>
+                        <div class="target-audience">
+                            <strong>Target Audience:</strong> {{ opportunity.target_audience }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="no-data">No specific advertising opportunities identified</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- SWOT Analysis -->
+        <div class="result-section swot-analysis">
+            <div class="section-header">
+                <h2><i class="fas fa-balance-scale"></i> SWOT Analysis</h2>
+            </div>
+            <div class="section-content">
+                <div class="swot-grid">
+                    <div class="swot-item strengths">
+                        <h4><i class="fas fa-thumbs-up"></i> Strengths</h4>
+                        <ul>
+                            {% for strength in analysis.swot_analysis.strengths %}
+                            <li>{{ strength }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="swot-item weaknesses">
+                        <h4><i class="fas fa-thumbs-down"></i> Weaknesses</h4>
+                        <ul>
+                            {% for weakness in analysis.swot_analysis.weaknesses %}
+                            <li>{{ weakness }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="swot-item opportunities">
+                        <h4><i class="fas fa-lightbulb"></i> Opportunities</h4>
+                        <ul>
+                            {% for opportunity in analysis.swot_analysis.opportunities %}
+                            <li>{{ opportunity }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="swot-item threats">
+                        <h4><i class="fas fa-exclamation-triangle"></i> Threats</h4>
+                        <ul>
+                            {% for threat in analysis.swot_analysis.threats %}
+                            <li>{{ threat }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technical Analysis -->
+        {% if analysis.technical_analysis %}
+        <div class="result-section">
+            <div class="section-header">
+                <h2><i class="fas fa-cogs"></i> Technical Analysis</h2>
+            </div>
+            <div class="section-content">
+                <div class="tech-grid">
+                    <div class="tech-item">
+                        <h4>Technologies Used</h4>
+                        <div class="tech-tags">
+                            {% for tech in analysis.technical_analysis.technologies_used %}
+                            <span class="tech-tag">{{ tech }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="tech-item">
+                        <h4>Website Structure</h4>
+                        <ul>
+                            {% for key, value in analysis.technical_analysis.website_structure.items() %}
+                            <li>{{ key.replace('_', ' ').title() }}: 
+                                <span class="{% if value %}positive{% else %}negative{% endif %}">
+                                    {{ 'Yes' if value else 'No' }}
+                                </span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% else %}
+    <div class="no-analysis">
+        <i class="fas fa-exclamation-circle"></i>
+        <h2>No Analysis Available</h2>
+        <p>We couldn't generate analysis results. Please try again.</p>
+        <a href="{{ url_for('index') }}" class="btn btn-primary">
+            <i class="fas fa-redo"></i> Try Again
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Smooth scrolling for internal links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+            behavior: 'smooth'
+        });
+    });
+});
+
+// Print functionality
+function printReport() {
+    window.print();
+}
+</script>
+{% endblock %}

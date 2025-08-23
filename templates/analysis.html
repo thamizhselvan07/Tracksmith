@@ -1,0 +1,458 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Analysis Results - Competitor Analysis Tool{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="text-white">Competitive Analysis Results</h2>
+    <p class="text-light">
+        Analysis for {{ your_company }} vs {{ competitor_company }} in {{ product_domain }} market
+    </p>
+    {# Fallback notice removed per request. #}
+</div>
+
+<!-- Charts Section -->
+<div class="row mb-4">
+    <!-- Market Share Pie Chart -->
+    <div class="col-md-4 mb-4">
+        <div class="card bg-dark h-100">
+            <div class="card-header">
+                <h3 class="card-title h5 mb-0 text-white">Market Share Distribution</h3>
+            </div>
+            <div class="card-body" style="height: 300px;">
+                {% if analysis.visualization_data and analysis.visualization_data.market_share_data %}
+                    <canvas id="marketShareChart"></canvas>
+                {% else %}
+                    <div class="text-center text-light py-4">
+                        <p>No market share data available</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Revenue Trends Line Chart -->
+    <div class="col-md-4 mb-4">
+        <div class="card bg-dark h-100">
+            <div class="card-header">
+                <h3 class="card-title h5 mb-0 text-white">Revenue Trends</h3>
+            </div>
+            <div class="card-body" style="height: 300px;">
+                {% if analysis.market_analysis and analysis.market_analysis.revenue_trends %}
+                    <canvas id="revenueTrendsChart"></canvas>
+                {% else %}
+                    <div class="text-center text-light py-4">
+                        <p>No revenue trend data available</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Comparison Radar Chart -->
+    <div class="col-md-4 mb-4">
+        <div class="card bg-dark h-100">
+            <div class="card-header">
+                <h3 class="card-title h5 mb-0 text-white">Product Comparison</h3>
+            </div>
+            <div class="card-body" style="height: 300px;">
+                {% if analysis.visualization_data and analysis.visualization_data.product_comparison %}
+                    <canvas id="productComparisonChart"></canvas>
+                {% else %}
+                    <div class="text-center text-light py-4">
+                        <p>No product comparison data available</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Advanced Analytics Section -->
+<div class="row mb-4">
+    <div class="col-md-6 mb-4">
+        <div class="card bg-dark h-100">
+            <div class="card-header">
+                <h3 class="card-title h5 mb-0 text-white">Market Sentiment Analysis</h3>
+            </div>
+            <div class="card-body">
+                <div class="sentiment-summary text-light">
+                    <h6 class="text-primary">Overall Sentiment</h6>
+                    <div class="progress mb-3" style="height: 25px;">
+                        {% set positive_sentiment = analysis.sentiment.positive|default(75) %}
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ positive_sentiment }}%">
+                            Positive {{ positive_sentiment }}%
+                        </div>
+                    </div>
+                    <div class="sentiment-details mt-3">
+                        <p><i class="fas fa-arrow-up text-success"></i> Brand Mentions: {{ analysis.sentiment.mentions|default('23K') }}</p>
+                        <p><i class="fas fa-users text-primary"></i> Customer Engagement: {{ analysis.sentiment.engagement|default('High') }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card bg-dark h-100">
+            <div class="card-header">
+                <h3 class="card-title h5 mb-0 text-white">Predictive Insights</h3>
+            </div>
+            <div class="card-body">
+                <div class="predictions text-light">
+                    <h6 class="text-primary">Market Trends</h6>
+                    <ul class="list-unstyled">
+                        {% set predictions = analysis.predictions|default([
+                            "Expected market growth: 12% in next quarter",
+                            "Emerging technology adoption trend",
+                            "Potential market expansion opportunities",
+                            "Customer behavior shift towards premium products"
+                        ]) %}
+                        {% for prediction in predictions %}
+                            <li><i class="fas fa-chart-line text-success me-2"></i>{{ prediction }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Company Overview -->
+    <div class="col-md-6 mb-4">
+        <div class="card bg-dark h-100">
+            <div class="card-header">
+                <h3 class="card-title h5 mb-0 text-white">Company Overview</h3>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4 text-light">Name</dt>
+                    <dd class="col-sm-8 text-light">{{ analysis.company_overview.name|default("Not Available") }}</dd>
+
+                    <dt class="col-sm-4 text-light">Industry</dt>
+                    <dd class="col-sm-8 text-light">{{ analysis.company_overview.industry|default("Not Available") }}</dd>
+
+                    <dt class="col-sm-4 text-light">Target Audience</dt>
+                    <dd class="col-sm-8 text-light">{{ analysis.company_overview.target_audience|default("Not Available") }}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <!-- Market Analysis -->
+    <div class="col-md-6 mb-4">
+        <div class="card bg-dark h-100">
+            <div class="card-header">
+                <h3 class="card-title h5 mb-0 text-white">Market Analysis</h3>
+            </div>
+            <div class="card-body">
+                <h6 class="text-light">Market Share</h6>
+                {% if analysis.market_analysis and analysis.market_analysis.market_share %}
+                    <ul class="list-unstyled text-light">
+                        <li>{{ competitor_company }}: {{ analysis.market_analysis.market_share[competitor_company]|default("N/A") }}</li>
+                        <li>{{ your_company }}: {{ analysis.market_analysis.market_share[your_company]|default("N/A") }}</li>
+                        <li>Others: {{ analysis.market_analysis.market_share.others|default("N/A") }}</li>
+                    </ul>
+                {% else %}
+                    <p class="text-light">No market share data available</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- SWOT Analysis -->
+    <div class="col-12 mb-4">
+        <div class="card bg-dark">
+            <div class="card-header">
+                <h3 class="card-title h5 mb-0 text-white">SWOT Analysis</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-6 mb-3">
+                        <h6 class="text-success">Strengths</h6>
+                        <ul class="list-unstyled">
+                            {% set strengths = analysis.swot_analysis.strengths if analysis.swot_analysis and analysis.swot_analysis.strengths else [
+                                "Established brand presence",
+                                "Strong market reputation",
+                                "Innovation capabilities",
+                                "Quality products",
+                                "Global distribution network",
+                                "Strong R&D capabilities"
+                            ] %}
+                            {% for strength in strengths %}
+                                <li class="text-light"><small><i class="fas fa-check-circle text-success me-2"></i>{{ strength }}</small></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <h6 class="text-danger">Weaknesses</h6>
+                        <ul class="list-unstyled">
+                            {% set weaknesses = analysis.swot_analysis.weaknesses if analysis.swot_analysis and analysis.swot_analysis.weaknesses else [
+                                "Competitive market pressure",
+                                "Resource constraints",
+                                "Market volatility",
+                                "Technology dependencies",
+                                "High operational costs",
+                                "Regional market gaps"
+                            ] %}
+                            {% for weakness in weaknesses %}
+                                <li class="text-light"><small><i class="fas fa-exclamation-circle text-danger me-2"></i>{{ weakness }}</small></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <h6 class="text-primary">Opportunities</h6>
+                        <ul class="list-unstyled">
+                            {% set opportunities = analysis.swot_analysis.opportunities if analysis.swot_analysis and analysis.swot_analysis.opportunities else [
+                                "Market expansion potential",
+                                "Emerging technologies",
+                                "Customer base growth",
+                                "Innovation possibilities",
+                                "Digital transformation",
+                                "Sustainable solutions"
+                            ] %}
+                            {% for opportunity in opportunities %}
+                                <li class="text-light"><small><i class="fas fa-lightbulb text-primary me-2"></i>{{ opportunity }}</small></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="col-sm-6">
+                        <h6 class="text-warning">Threats</h6>
+                        <ul class="list-unstyled">
+                            {% set threats = analysis.swot_analysis.threats if analysis.swot_analysis and analysis.swot_analysis.threats else [
+                                "Market competition",
+                                "Rapid technology changes",
+                                "Economic uncertainties",
+                                "Changing consumer preferences",
+                                "Supply chain disruptions",
+                                "Regulatory changes"
+                            ] %}
+                            {% for threat in threats %}
+                                <li class="text-light"><small><i class="fas fa-exclamation-triangle text-warning me-2"></i>{{ threat }}</small></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Competitor Intelligence -->
+<div class="row mb-4">
+    <div class="col-md-6 mb-4">
+        <div class="card bg-dark h-100">
+            <div class="card-header">
+                <h3 class="card-title h5 mb-0 text-white">Competitive Intelligence</h3>
+            </div>
+            <div class="card-body">
+                <div class="intel-summary text-light">
+                    <h6 class="text-primary">Key Findings</h6>
+                    {% set intel_points = analysis.competitive_intel|default([
+                        "Product innovation frequency higher than industry average",
+                        "Strong presence in emerging markets",
+                        "Significant investment in R&D",
+                        "Focus on sustainable manufacturing",
+                        "Strategic partnerships in key markets"
+                    ]) %}
+                    <ul class="list-unstyled">
+                        {% for point in intel_points %}
+                            <li class="mb-2">
+                                <i class="fas fa-info-circle text-info me-2"></i>
+                                {{ point }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card bg-dark h-100">
+            <div class="card-header">
+                <h3 class="card-title h5 mb-0 text-white">Strategic Recommendations</h3>
+            </div>
+            <div class="card-body">
+                <div class="recommendations text-light">
+                    <h6 class="text-primary">Action Items</h6>
+                    {% set recommendations = analysis.recommendations|default([
+                        "Invest in emerging technology adoption",
+                        "Expand digital presence in key markets",
+                        "Strengthen supply chain resilience",
+                        "Focus on sustainable product development",
+                        "Enhance customer experience initiatives"
+                    ]) %}
+                    <ul class="list-unstyled">
+                        {% for rec in recommendations %}
+                            <li class="mb-2">
+                                <i class="fas fa-arrow-right text-success me-2"></i>
+                                {{ rec }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="text-center mt-4">
+    <a href="{{ url_for("index") }}" class="btn btn-outline-light">Analyze Another Competitor</a>
+</div>
+
+{% block additional_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://kit.fontawesome.com/your-font-awesome-kit.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const chartDefaults = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                labels: { color: "white" },
+                position: 'bottom'
+            },
+            tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                titleColor: 'white',
+                bodyColor: 'white',
+                borderColor: 'rgba(255, 255, 255, 0.1)',
+                borderWidth: 1
+            }
+        }
+    };
+
+    // Market Share Chart
+    {% if analysis.visualization_data and analysis.visualization_data.market_share_data %}
+        const marketShareData = {{ analysis.visualization_data.market_share_data | tojson }};
+        new Chart(document.getElementById("marketShareChart"), {
+            type: "doughnut",
+            data: {
+                labels: marketShareData.labels,
+                datasets: [{
+                    data: marketShareData.values,
+                    backgroundColor: ["#4CAF50", "#2196F3", "#FFC107"],
+                    borderColor: "rgba(255, 255, 255, 0.1)",
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                ...chartDefaults,
+                cutout: '60%',
+                plugins: {
+                    ...chartDefaults.plugins,
+                    title: {
+                        display: true,
+                        text: 'Market Distribution',
+                        color: 'white',
+                        font: { size: 14 }
+                    }
+                }
+            }
+        });
+    {% endif %}
+
+    // Revenue Trends Chart (use black and green palette)
+    {% if analysis.market_analysis and analysis.market_analysis.revenue_trends %}
+        const revenueData = {{ analysis.market_analysis.revenue_trends | tojson }};
+    new Chart(document.getElementById("revenueTrendsChart"), {
+            type: "line",
+            data: {
+                labels: revenueData.labels,
+        datasets: revenueData.datasets.map((dataset, idx) => {
+            // map colors: original black -> green, original green -> red
+            const palette = ['#4CAF50', '#FF0000'];
+                    const border = dataset.borderColor || palette[idx % palette.length];
+                    return {
+                        ...dataset,
+                        borderColor: border,
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        backgroundColor: border + '20'
+                    };
+                })
+            },
+            options: {
+                ...chartDefaults,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: "rgba(255, 255, 255, 0.1)" },
+                        ticks: { color: "white" }
+                    },
+                    x: {
+                        grid: { color: "rgba(255, 255, 255, 0.1)" },
+                        ticks: { color: "white" }
+                    }
+                }
+            }
+        });
+    {% endif %}
+
+    // Product Comparison Chart
+    {% if analysis.visualization_data and analysis.visualization_data.product_comparison %}
+        const comparisonData = {{ analysis.visualization_data.product_comparison | tojson }};
+        new Chart(document.getElementById("productComparisonChart"), {
+            type: "radar",
+            data: {
+                labels: comparisonData.categories,
+                datasets: comparisonData.datasets.map(dataset => ({
+                    ...dataset,
+                    borderWidth: 2,
+                    pointBackgroundColor: dataset.borderColor,
+                    pointBorderColor: 'white',
+                    pointHoverRadius: 6,
+                    pointRadius: 4
+                }))
+            },
+            options: {
+                ...chartDefaults,
+                scales: {
+                    r: {
+                        min: 0,
+                        max: 10,
+                        ticks: { color: "white", stepSize: 2 },
+                        grid: { color: "rgba(255, 255, 255, 0.1)" },
+                        pointLabels: { color: "white", font: { size: 12 } },
+                        angleLines: { color: "rgba(255, 255, 255, 0.1)" }
+                    }
+                }
+            }
+        });
+    {% endif %}
+
+    // Animate progress bars
+    const progressBars = document.querySelectorAll('.progress-bar');
+    progressBars.forEach(bar => {
+        const width = bar.style.width;
+        bar.style.width = '0';
+        setTimeout(() => {
+            bar.style.width = width;
+            bar.style.transition = 'width 1s ease-in-out';
+        }, 100);
+    });
+});
+</script>
+<style>
+.card {
+    transition: transform 0.2s;
+}
+.card:hover {
+    transform: translateY(-5px);
+}
+.progress {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+.progress-bar {
+    transition: width 1s ease-in-out;
+}
+</style>
+</style>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Competitor Analysis Tool{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Analyze Your Competitor</h2>
+    </div>
+    <div class="card-body">
+        <form action="{{ url_for('analyze_competitor') }}" method="POST" id="analysis-form">
+            <div class="mb-3">
+                <label for="competitor_company" class="form-label">Competitor Company Name*</label>
+                <input type="text" class="form-control" id="competitor_company" name="competitor_company" required
+                       placeholder="e.g., Apple">
+                <div class="form-text">Enter the competitor company name</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="your_company" class="form-label">Your Company Name*</label>
+                <input type="text" class="form-control" id="your_company" name="your_company" required
+                       placeholder="e.g., Samsung">
+            </div>
+
+            <div class="mb-3">
+                <label for="product_domain" class="form-label">Product Category*</label>
+                <input type="text" class="form-control" id="product_domain" name="product_domain" required
+                       placeholder="e.g., Smartphones, Laptops">
+                <div class="form-text">Specify the product category for comparative analysis</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="analyze-btn">
+                Analyze Competitor
+                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('analysis-form').addEventListener('submit', function(e) {
+    const btn = document.getElementById('analyze-btn');
+    const spinner = btn.querySelector('.spinner-border');
+    btn.disabled = true;
+    spinner.classList.remove('d-none');
+});
+</script>
+{% endblock %}
