@@ -1,4 +1,4 @@
-# Python
+# Python cache
 __pycache__/
 *.py[cod]
 *.pyo
@@ -6,15 +6,27 @@ __pycache__/
 *.pkl
 *.so
 
-# Virtual env
+# Virtual environments
 .venv/
 venv/
 ENV/
 env/
 
-# PyCharm
+# Environment variables
+.env
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# PyCharm project settings
 .idea/
 
-# OS files
+# VSCode settings
+.vscode/
+
+# OS generated files
 .DS_Store
 Thumbs.db
+
+# Logs
+*.log
