@@ -301,9 +301,9 @@ def internal_error(error):
         error_message="An internal server error occurred. Our team has been notified."), 500
 
 
-if __name__ == '__main__':
-    app.run(debug=app.config['DEBUG'], host='0.0.0.0', port=5000)
-
+#if __name__ == '__main__':
+#    app.run(debug=app.config['DEBUG'], host='0.0.0.0', port=5000)
+app = app
 
 @app.route('/run-demo')
 def run_demo():
